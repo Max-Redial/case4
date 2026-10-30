@@ -1,0 +1,24 @@
+{
+  "name": "case4-orders-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Fake store order API for the retail order and returns assistant test (case 4)",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "start:ts": "tsx src/server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "test": "node --import tsx --test src/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.0",
+    "hono": "^4.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
