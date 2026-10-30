@@ -13,11 +13,11 @@ API_KEY=case4-dev-key npm run start:ts   # from source; or: npm run build && npm
 npm test
 ```
 
-| Variable | Default | |
-| --- | --- | --- |
-| `API_KEY` | unset (auth off) | Bearer key required on `/orders/*` |
-| `PORT` | 3000 | |
-| `SLOW_MS` | 20000 | Delay for `ORD-SLOW`; the HTTP step gives up at 15000 |
+| Variable  | Default          |                                                       |
+| --------- | ---------------- | ----------------------------------------------------- |
+| `API_KEY` | unset (auth off) | Bearer key required on `/orders/*`                    |
+| `PORT`    | 3000             |                                                       |
+| `SLOW_MS` | 20000            | Delay for `ORD-SLOW`; the HTTP step gives up at 15000 |
 
 ## Deploy on Coolify
 
@@ -35,17 +35,30 @@ New resource → this Git repo → build pack **Dockerfile**. Then:
 
 `GET /orders/:id` with `Authorization: Bearer <API_KEY>`. The id is forgiving: `1001`, `ord-1001` and `ORD-1001` are the same order. The API returns facts only (`status`, `days_since_delivery` as a number, items, total, payment method); whether an item can be returned is the policy's call.
 
-| Order | Answers | Scenario |
-| --- | --- | --- |
-| `ORD-1001` | 200, delivered 5 days ago, a jacket | Eligible return |
-| `ORD-1002` | 200, delivered 45 days ago, boots | Outside the 30-day window |
-| `ORD-1003` | 200, `in_transit`, no delivery date | Not delivered yet; no invented status |
-| `ORD-1004` | 200, delivered 10 days ago, a gift card and a jacket | The policy says nothing about gift cards |
-| `ORD-1005` | 200, delivered 30 days ago | Last day of the window |
-| `ORD-404`, any unknown id | 404 `not_found` | Order not found |
-| `ORD-503` | 503 `service_unavailable`, `Retry-After: 30` | API unavailable |
-| `ORD-SLOW` | 200 after `SLOW_MS` | The HTTP step times out |
-| wrong or missing key | 401 `unauthorized` | Secret header check |
+| Order                     | Answers                                              | Scenario                                 |
+| ------------------------- | ---------------------------------------------------- | ---------------------------------------- |
+| `ORD-1001`                | 200, delivered 5 days ago, a jacket                  | Eligible return                          |
+| `ORD-1002`                | 200, delivered 45 days ago, boots                    | Outside the 30-day window                |
+| `ORD-1003`                | 200, `in_transit`, no delivery date                  | Not delivered yet; no invented status    |
+| `ORD-1004`                | 200, delivered 10 days ago, a gift card and a jacket | The policy says nothing about gift cards |
+| `ORD-1005`                | 200, delivered 30 days ago                           | Last day of the window                   |
+| `ORD-404`, any unknown id | 404 `not_found`                                      | Order not found                          |
+| `ORD-503`                 | 503 `service_unavailable`, `Retry-After: 30`         | API unavailable                          |
+| `ORD-SLOW`                | 200 after `SLOW_MS`                                  | The HTTP step times out                  |
+| wrong or missing key      | 401 `unauthorized`                                   | Secret header check                      |
+
+### Repairs (auto repair status case)
+
+`GET /repairs/:ref`, same bearer key. The ref is forgiving: `2001`, `rpr-2001` and `RPR-2001` are the same repair. Facts only (`status`, vehicle, work, dates, part, balance, pickup hours); what to say and whether to offer a callback is the job's call.
+
+| Repair                     | Answers                                           | Scenario                 |
+| -------------------------- | ------------------------------------------------- | ------------------------ |
+| `RPR-2001`                 | 200, `ready_for_pickup`, balance due 412.50       | Repair ready             |
+| `RPR-2002`                 | 200, `awaiting_parts`, part and `parts_eta`       | Awaiting parts           |
+| `RPR-2003`                 | 200, `in_progress`, estimated completion tomorrow | In the shop              |
+| `RPR-404`, any unknown ref | 404 `not_found`                                   | Unknown repair reference |
+| `RPR-503`                  | 503 `service_unavailable`, `Retry-After: 30`      | API unavailable          |
+| `RPR-SLOW`                 | 200 after `SLOW_MS`                               | The HTTP step times out  |
 
 ## In the job
 

@@ -1,6 +1,6 @@
 # Returns policy
 
-Upload this document to the knowledge base. The assistant must answer only from it.
+Upload this document to the knowledge base as `.txt` (the app does not accept `.md`). The assistant must answer only from it.
 
 ## Return window
 
